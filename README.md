@@ -3,6 +3,8 @@
 
 > Transform any startup idea into a complete, investor-ready business blueprint in seconds using the power of IBM Granite foundation models on IBM watsonx.ai.
 
+**🔴 Live Demo:** [https://startupplan-generator-edunet-foundation.onrender.com](https://startupplan-generator-edunet-foundation.onrender.com)
+
 ---
 
 ## 🏆 Core Technologies Used (The IBM Stack)
