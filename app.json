@@ -1,0 +1,22 @@
+{
+  "name": "startup-blueprint-generator-agent",
+  "description": "An Agentic AI application powered by IBM Granite to generate strategic startup business plans.",
+  "repository": "https://github.com/RajKiranAcharyya/AICTE_IBM_EDUNET_INTERNSHIP_Startup_Blueprint_Generator",
+  "keywords": [
+    "python",
+    "flask",
+    "ibm-watsonx",
+    "granite",
+    "agentic-ai"
+  ],
+  "env": {
+    "IBM_API_KEY": {
+      "description": "Your IBM Cloud API Key",
+      "required": true
+    },
+    "IBM_PROJECT_ID": {
+      "description": "Your IBM watsonx Project ID",
+      "required": true
+    }
+  }
+}
