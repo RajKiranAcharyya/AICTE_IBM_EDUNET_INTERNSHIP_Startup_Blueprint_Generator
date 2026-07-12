@@ -610,12 +610,15 @@ def _build_pdf(blueprint: dict) -> bytes:
         f"{meta.get('industry','')}  |  {meta.get('country','')}  |  "
         f"Audience: {meta.get('audience','')}  |  Budget: {meta.get('budget','')}"
     )
-    pdf.multi_cell(174, 5, details[:160])
+    # Clean the details string to prevent emojis from form inputs crashing fpdf2
+    details = _clean_for_pdf(details[:160])
+    pdf.multi_cell(174, 5, details)
 
     pdf.set_x(18)
     pdf.set_font("Helvetica", "I", 8)
     pdf.set_text_color(MUTED_R, MUTED_G, MUTED_B)
-    pdf.cell(0, 5, f"Generated: {meta.get('generated','')}", ln=True)
+    generated_text = _clean_for_pdf(f"Generated: {meta.get('generated','')}")
+    pdf.cell(0, 5, generated_text, ln=True)
 
     # Goal block
     goal_text = _clean_for_pdf(meta.get("goal", ""))
