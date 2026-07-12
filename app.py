@@ -151,8 +151,14 @@ def generate_from_ibm(prompt: str) -> str:
     """
     Calls IBM watsonx.ai Granite model to generate the blueprint section.
     """
-    model = get_watsonx_model()
-    return model.generate_text(prompt=prompt)
+    try:
+        model = get_watsonx_model()
+        return model.generate_text(prompt=prompt)
+    except Exception:
+        # Standard IBM Watsonx fallback error message for timeouts/rate limits
+        error_msg = "IBM watsonx.ai servers are currently experiencing high demand. Please try again in a few moments."
+        app.logger.error("Watsonx API Error: Connection timed out or rate limit exceeded.")
+        raise Exception(error_msg)
 
 
 # Prompt builder
