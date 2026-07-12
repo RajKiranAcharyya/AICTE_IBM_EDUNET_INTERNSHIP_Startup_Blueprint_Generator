@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Startup Blueprint Generator — IBM watsonx.ai</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ░░ NAVBAR ░░ -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNavbar">
+  <div class="container-xl">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span class="brand-icon"><i class="bi bi-rocket-takeoff-fill"></i></span>
+      <span class="brand-text">StartupBlueprint<span class="text-accent">.AI</span></span>
+    </a>
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <span class="badge-ibm">Powered by IBM watsonx.ai</span>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="themeToggle" title="Toggle dark mode">
+        <i class="bi bi-moon-fill" id="themeIcon"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ░░ HERO ░░ -->
+<section class="hero-section">
+  <div class="container-xl">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="hero-badge mb-3">
+          <i class="bi bi-stars"></i> AI-Powered Business Intelligence
+        </div>
+        <h1 class="hero-title">Turn Your Idea Into a<br /><span class="text-gradient">Complete Business Blueprint</span></h1>
+        <p class="hero-subtitle">
+          Powered by IBM Granite models on watsonx.ai — get a full startup plan covering
+          market research, financial projections, legal checklist, investor pitch,
+          government schemes and more in seconds.
+        </p>
+        <div class="hero-stats d-flex gap-4 mt-4">
+          <div class="stat-item">
+            <span class="stat-num">19</span>
+            <span class="stat-label">Sections</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">AI</span>
+            <span class="stat-label">Powered</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">PDF</span>
+            <span class="stat-label">Export</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+        <div class="hero-visual">
+          <div class="floating-card card-1"><i class="bi bi-graph-up-arrow"></i> Market Analysis</div>
+          <div class="floating-card card-2"><i class="bi bi-currency-dollar"></i> Revenue Model</div>
+          <div class="floating-card card-3"><i class="bi bi-people-fill"></i> Target Audience</div>
+          <div class="floating-card card-4"><i class="bi bi-shield-check"></i> Legal Checklist</div>
+          <div class="center-icon"><i class="bi bi-rocket-takeoff-fill"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FORM CARD ░░ -->
+<section class="form-section py-5" id="generate">
+  <div class="container-xl">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">Generate Your Blueprint</h2>
+      <p class="section-subtitle">Fill in the details below and let IBM Granite AI build your complete startup plan.</p>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ error }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <form id="blueprintForm" novalidate>
+      <div class="form-card">
+
+        <!-- Row 1 -->
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="form-group-styled">
+              <label class="form-label-styled" for="idea">
+                <i class="bi bi-lightbulb-fill text-warning"></i> Startup Idea <span class="required">*</span>
+              </label>
+              <textarea class="form-control form-control-styled" id="idea" name="idea"
+                rows="3" placeholder="e.g. An AI-powered grocery delivery app for rural areas using WhatsApp ordering…"
+                required maxlength="500"></textarea>
+              <div class="char-count" id="ideaCount">0 / 500</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group-styled">
+              <label class="form-label-styled" for="goal">
+                <i class="bi bi-trophy-fill text-success"></i> Business Goal <span class="required">*</span>
+              </label>
+              <textarea class="form-control form-control-styled" id="goal" name="goal"
+                rows="3" placeholder="e.g. Reach 10,000 users in 12 months, achieve profitability in year 2, raise Series A…"
+                required maxlength="300"></textarea>
+              <div class="char-count" id="goalCount">0 / 300</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row g-4 mt-1">
+          <div class="col-md-6 col-lg-3">
+            <div class="form-group-styled">
+              <label class="form-label-styled" for="industry">
+                <i class="bi bi-building-fill text-primary"></i> Industry <span class="required">*</span>
+              </label>
+              <select class="form-select form-control-styled" id="industry" name="industry" required>
+                <option value="" disabled selected>Select industry…</option>
+                <option>AgriTech</option>
+                <option>EdTech</option>
+                <option>FinTech</option>
+                <option>HealthTech</option>
+                <option>E-Commerce</option>
+                <option>SaaS / B2B Software</option>
+                <option>FoodTech</option>
+                <option>CleanTech / GreenTech</option>
+                <option>Logistics & Supply Chain</option>
+                <option>Real Estate / PropTech</option>
+                <option>Travel & Hospitality</option>
+                <option>Media & Entertainment</option>
+                <option>Fashion & Retail</option>
+                <option>Cybersecurity</option>
+                <option>AI / Machine Learning</option>
+                <option>Blockchain / Web3</option>
+                <option>Manufacturing</option>
+                <option>Healthcare Services</option>
+                <option>Legal Tech</option>
+                <option>HR Tech</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="form-group-styled">
+              <label class="form-label-styled" for="country">
+                <i class="bi bi-globe-asia-australia text-info"></i> Country <span class="required">*</span>
+              </label>
+              <select class="form-select form-control-styled" id="country" name="country" required>
+                <option value="" disabled selected>Select country…</option>
+                <option>India</option>
+                <option>United States</option>
+                <option>United Kingdom</option>
+                <option>Canada</option>
+                <option>Australia</option>
+                <option>Germany</option>
+                <option>France</option>
+                <option>Singapore</option>
+                <option>UAE</option>
+                <option>Nigeria</option>
+                <option>Kenya</option>
+                <option>South Africa</option>
+                <option>Brazil</option>
+                <option>Indonesia</option>
+                <option>Philippines</option>
+                <option>Bangladesh</option>
+                <option>Pakistan</option>
+                <option>Vietnam</option>
+                <option>Mexico</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="form-group-styled">
+              <label class="form-label-styled" for="audience">
+                <i class="bi bi-people-fill text-purple"></i> Target Audience <span class="required">*</span>
+              </label>
+              <input type="text" class="form-control form-control-styled" id="audience" name="audience"
+                placeholder="e.g. Urban millennials aged 25–35, SMEs, rural farmers…" required maxlength="200" />
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="form-group-styled">
+              <label class="form-label-styled" for="budget">
+                <i class="bi bi-cash-coin text-success"></i> Available Budget <span class="required">*</span>
+              </label>
+              <select class="form-select form-control-styled" id="budget" name="budget" required>
+                <option value="" disabled selected>Select budget range…</option>
+                <option>Under $5,000</option>
+                <option>$5,000 – $25,000</option>
+                <option>$25,000 – $100,000</option>
+                <option>$100,000 – $500,000</option>
+                <option>$500,000 – $1 Million</option>
+                <option>$1M – $5M (Series A ready)</option>
+                <option>$5M+ (Growth Stage)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center mt-5">
+          <button type="submit" class="btn btn-generate" id="generateBtn">
+            <span class="btn-inner">
+              <i class="bi bi-magic me-2"></i>
+              <span class="btn-text">Generate My Blueprint</span>
+            </span>
+          </button>
+          <p class="form-hint mt-3"><i class="bi bi-info-circle me-1"></i>Generation typically takes 30–60 seconds. Please wait while IBM Granite analyses your idea.</p>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ░░ LOADING OVERLAY ░░ -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-card">
+    <div class="loading-animation">
+      <div class="orbit-ring ring-1"></div>
+      <div class="orbit-ring ring-2"></div>
+      <div class="orbit-ring ring-3"></div>
+      <div class="loading-core"><i class="bi bi-rocket-takeoff-fill"></i></div>
+    </div>
+    <h3 class="loading-title">Crafting Your Blueprint</h3>
+    <p class="loading-subtitle" id="loadingStatus">Connecting to IBM watsonx.ai…</p>
+    <div class="progress loading-progress">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" id="loadingBar" role="progressbar" style="width: 5%"></div>
+    </div>
+    <div class="loading-steps mt-4" id="loadingSteps">
+      <div class="step-item active" data-step="1"><i class="bi bi-cpu"></i> Generating sections 1–10</div>
+      <div class="step-item" data-step="2"><i class="bi bi-bar-chart"></i> Generating sections 11–19</div>
+      <div class="step-item" data-step="3"><i class="bi bi-search"></i> Analysing &amp; structuring</div>
+      <div class="step-item" data-step="4"><i class="bi bi-file-earmark-text"></i> Compiling full report</div>
+    </div>
+  </div>
+</div>
+
+<!-- ░░ RESULT PREVIEW (inline) ░░ -->
+<section class="result-section py-5 d-none" id="resultSection">
+  <div class="container-xl">
+    <div class="result-header text-center mb-5">
+      <div class="success-badge"><i class="bi bi-check-circle-fill me-2"></i>Blueprint Generated Successfully!</div>
+      <h2 class="section-title mt-3" id="resultTitle">Your Startup Blueprint</h2>
+      <p class="section-subtitle" id="resultMeta"></p>
+      <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+        <a href="/report" class="btn btn-primary-custom" id="viewReportBtn" target="_blank">
+          <i class="bi bi-file-earmark-richtext me-2"></i>View Full Report
+        </a>
+        <button class="btn btn-outline-custom" id="copyReportBtn">
+          <i class="bi bi-clipboard me-2"></i>Copy Report
+        </button>
+        <button class="btn btn-outline-custom" onclick="window.location.reload()">
+          <i class="bi bi-arrow-clockwise me-2"></i>New Blueprint
+        </button>
+      </div>
+    </div>
+
+    <!-- Section Cards Grid -->
+    <div class="row g-4" id="sectionsGrid"></div>
+  </div>
+</section>
+
+<!-- ░░ FEATURES STRIP ░░ -->
+<section class="features-section py-5">
+  <div class="container-xl">
+    <div class="row g-4 justify-content-center">
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-cpu-fill"></i></div>
+          <h5>IBM Granite AI</h5>
+          <p>Powered by IBM's state-of-the-art Granite foundation models on watsonx.ai.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-globe2"></i></div>
+          <h5>Country-Specific</h5>
+          <p>Government schemes, legal requirements, and market data tailored to your country.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-file-earmark-pdf-fill"></i></div>
+          <h5>PDF Export</h5>
+          <p>Download your complete business blueprint as a professional PDF report.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-shield-fill-check"></i></div>
+          <h5>19 Sections</h5>
+          <p>From SWOT to investor pitch — every aspect of your startup covered in detail.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ░░ FOOTER ░░ -->
+<footer class="site-footer">
+  <div class="container-xl">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <span class="footer-brand"><i class="bi bi-rocket-takeoff-fill me-2"></i>StartupBlueprint.AI</span>
+        <span class="footer-divider mx-3">|</span>
+        <span class="footer-powered">Powered by IBM watsonx.ai &amp; IBM Granite</span>
+      </div>
+      <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <span class="footer-note">Built for the IBM AICTE EduNet Programme</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

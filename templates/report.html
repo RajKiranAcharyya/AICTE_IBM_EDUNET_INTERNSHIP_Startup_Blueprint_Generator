@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Startup Blueprint Report — {{ blueprint.metadata.idea[:50] }}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+</head>
+<body class="report-page">
+
+<!-- ░░ REPORT NAVBAR ░░ -->
+<nav class="navbar navbar-expand-lg sticky-top report-navbar" id="mainNavbar">
+  <div class="container-xl">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span class="brand-icon"><i class="bi bi-rocket-takeoff-fill"></i></span>
+      <span class="brand-text">StartupBlueprint<span class="text-accent">.AI</span></span>
+    </a>
+    <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+      <a href="/report/{{ bid }}/pdf" class="btn btn-sm btn-success-custom rounded-pill px-3" id="downloadPdfBtn">
+        <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+      </a>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="copyFullReport">
+        <i class="bi bi-clipboard me-1"></i>Copy
+      </button>
+      <a href="/" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+        <i class="bi bi-plus-lg me-1"></i>New Blueprint
+      </a>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill" id="themeToggle" title="Toggle dark mode">
+        <i class="bi bi-moon-fill" id="themeIcon"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ░░ REPORT HEADER ░░ -->
+<div class="report-hero" id="reportTop">
+  <div class="container-xl">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <div class="report-badge mb-3">
+          <i class="bi bi-file-earmark-richtext me-2"></i>Startup Business Blueprint
+        </div>
+        <h1 class="report-title">{{ blueprint.metadata.idea[:80] }}{% if blueprint.metadata.idea|length > 80 %}…{% endif %}</h1>
+        <div class="report-meta-row mt-4 d-flex flex-wrap gap-3">
+          <span class="meta-pill"><i class="bi bi-building me-1"></i>{{ blueprint.metadata.industry }}</span>
+          <span class="meta-pill"><i class="bi bi-globe me-1"></i>{{ blueprint.metadata.country }}</span>
+          <span class="meta-pill"><i class="bi bi-people me-1"></i>{{ blueprint.metadata.audience }}</span>
+          <span class="meta-pill"><i class="bi bi-cash-coin me-1"></i>{{ blueprint.metadata.budget }}</span>
+        </div>
+        <p class="report-generated mt-3">
+          <i class="bi bi-clock me-1"></i>Generated on {{ blueprint.metadata.generated }}
+          &nbsp;·&nbsp;
+          <i class="bi bi-cpu me-1"></i>IBM watsonx.ai &amp; IBM Granite
+        </p>
+      </div>
+      <div class="col-lg-4 d-none d-lg-flex justify-content-end">
+        <div class="report-stats-grid">
+          <div class="rstat"><span class="rstat-num">19</span><span class="rstat-label">Sections</span></div>
+          <div class="rstat"><span class="rstat-num">AI</span><span class="rstat-label">Granite</span></div>
+          <div class="rstat"><span class="rstat-num">PDF</span><span class="rstat-label">Ready</span></div>
+          <div class="rstat"><span class="rstat-num">∞</span><span class="rstat-label">Insights</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ░░ MAIN REPORT LAYOUT ░░ -->
+<div class="container-xl py-5">
+  <div class="row g-4">
+
+    <!-- Sidebar TOC -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="toc-card sticky-top" style="top: 80px;">
+        <div class="toc-header"><i class="bi bi-list-ul me-2"></i>Contents</div>
+        <nav id="tocNav">
+          {% for slug, label in sections %}
+          <a class="toc-link" href="#section-{{ slug }}">
+            <span class="toc-num">{{ loop.index }}</span>{{ label }}
+          </a>
+          {% endfor %}
+        </nav>
+        <div class="toc-footer mt-3">
+          <a href="/report/{{ bid }}/pdf" class="btn btn-sm w-100 btn-success-custom" id="downloadPdfBtn2">
+            <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Body -->
+    <div class="col-lg-9">
+      <div id="reportBody">
+
+        {% set section_icons = {
+          'executive_summary':      'bi-briefcase-fill',
+          'business_model_canvas':  'bi-grid-3x3-gap-fill',
+          'market_research':        'bi-bar-chart-fill',
+          'competitor_analysis':    'bi-diagram-3-fill',
+          'swot_analysis':          'bi-grid-fill',
+          'target_customers':       'bi-person-lines-fill',
+          'value_proposition':      'bi-gem',
+          'estimated_budget':       'bi-calculator-fill',
+          'revenue_model':          'bi-currency-exchange',
+          'pricing_strategy':       'bi-tags-fill',
+          'marketing_strategy':     'bi-megaphone-fill',
+          'go_to_market_strategy':  'bi-send-fill',
+          'funding_opportunities':  'bi-bank2',
+          'government_schemes':     'bi-flag-fill',
+          'legal_checklist':        'bi-clipboard-check-fill',
+          'risk_analysis':          'bi-exclamation-triangle-fill',
+          'growth_roadmap':         'bi-map-fill',
+          'investor_pitch':         'bi-mic-fill',
+          'action_plan_30_60_90':   'bi-calendar-check-fill'
+        } %}
+
+        {% set section_colors = [
+          'color-blue','color-purple','color-green','color-orange','color-red',
+          'color-teal','color-pink','color-indigo','color-yellow','color-cyan',
+          'color-blue','color-purple','color-green','color-orange','color-red',
+          'color-teal','color-pink','color-indigo','color-yellow'
+        ] %}
+
+        {% for slug, label in sections %}
+        {% set loop_idx = loop.index0 %}
+        <div class="report-section-card" id="section-{{ slug }}">
+          <div class="rsc-header {{ section_colors[loop_idx] }}">
+            <div class="rsc-icon"><i class="bi {{ section_icons.get(slug, 'bi-circle-fill') }}"></i></div>
+            <div>
+              <div class="rsc-number">Section {{ loop.index }}</div>
+              <h2 class="rsc-title">{{ label }}</h2>
+            </div>
+          </div>
+          <div class="rsc-body">
+            {% set content = blueprint.sections.get(slug, '') %}
+            {{ content | md_to_html | safe }}
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Goal Statement -->
+        <div class="report-section-card goal-card mt-4">
+          <div class="rsc-header color-green">
+            <div class="rsc-icon"><i class="bi bi-trophy-fill"></i></div>
+            <div>
+              <div class="rsc-number">Goal</div>
+              <h2 class="rsc-title">Business Goal</h2>
+            </div>
+          </div>
+          <div class="rsc-body">
+            <p class="goal-text">{{ blueprint.metadata.goal }}</p>
+          </div>
+        </div>
+
+        <!-- Report Footer -->
+        <div class="report-footer-card mt-4 text-center">
+          <div class="mb-3">
+            <i class="bi bi-rocket-takeoff-fill report-footer-icon"></i>
+          </div>
+          <h4>Your Blueprint is Ready to Launch</h4>
+          <p class="text-muted">This report was generated by IBM watsonx.ai using the IBM Granite foundation model.
+            Use this as a living document — revisit and refine it as your startup evolves.</p>
+          <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+            <a href="/report/{{ bid }}/pdf" class="btn btn-success-custom px-4" id="downloadPdfBtn3">
+              <i class="bi bi-file-earmark-pdf me-2"></i>Download PDF
+            </a>
+            <button class="btn btn-outline-custom px-4" id="copyFullReport2">
+              <i class="bi bi-clipboard me-2"></i>Copy Full Report
+            </button>
+            <a href="/" class="btn btn-outline-custom px-4">
+              <i class="bi bi-plus-lg me-2"></i>Generate New Blueprint
+            </a>
+          </div>
+          <p class="report-disclaimer mt-4">
+            <i class="bi bi-info-circle me-1"></i>
+            This blueprint is AI-generated for planning purposes. Validate market data, legal advice,
+            and financial projections with qualified professionals before execution.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage">Copied to clipboard!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  // Report page specific initialisation
+  document.addEventListener('DOMContentLoaded', () => {
+    initReport();
+  });
+</script>
+</body>
+</html>
