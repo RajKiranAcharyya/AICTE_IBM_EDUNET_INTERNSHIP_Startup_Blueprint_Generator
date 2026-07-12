@@ -166,7 +166,7 @@ You can customise:
 
 ## 🚀 Deployment
 
-### Option A: Deploy to Render (Recommended — Free Tier)
+### Deploy to Render (Recommended — Free Tier)
 
 1. **Push to GitHub**
    ```bash
