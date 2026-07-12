@@ -257,7 +257,7 @@ MIT License — free to use, modify, and distribute.
 
 ## 🙏 Acknowledgements
 
-Built as part of the **IBM AICTE EduNet Foundation** using IBM watsonx.ai and IBM Granite foundation models.
+Built as part of the **IBM SKILLSBUILD AICTE INTERNSHIP COLLABORATED WITH EduNet Foundation** using IBM watsonx.ai and IBM Granite foundation models.
 
 ---
 
