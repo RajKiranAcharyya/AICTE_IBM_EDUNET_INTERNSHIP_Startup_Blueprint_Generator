@@ -546,6 +546,11 @@ def _clean_for_pdf(text: str) -> str:
             .replace("\u2018", "'").replace("\u2019", "'")
             .replace("\u201c", '"').replace("\u201d", '"')
             .replace("\u2022", "-").replace("\u2026", "..."))
+    
+    # CRITICAL FIX: fpdf2 with Helvetica will crash on emojis or strange unicode characters.
+    # We must force the string into latin-1, ignoring any characters that don't fit.
+    text = text.encode("latin-1", "ignore").decode("latin-1")
+    
     return text.strip()
 
 
