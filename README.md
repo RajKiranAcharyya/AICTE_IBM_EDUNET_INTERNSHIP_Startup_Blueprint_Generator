@@ -8,8 +8,7 @@
 ---
 
 ## 🎥 Video Demonstration
-*(Delete this text and drag-and-drop your 23MB .mp4 video file right here!)*
-
+https://docs.google.com/videos/d/1r0zR4eqxMDFpNzph_9MeQwZTrGSSQXVg3asL4nH2F_A/play
 ---
 
 ## 🏆 Core Technologies Used (The IBM Stack)
