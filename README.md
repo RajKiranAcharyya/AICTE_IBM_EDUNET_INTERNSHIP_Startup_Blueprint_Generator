@@ -16,7 +16,8 @@ https://docs.google.com/videos/d/1r0zR4eqxMDFpNzph_9MeQwZTrGSSQXVg3asL4nH2F_A/pl
 <img width="1917" height="862" alt="Screenshot 2026-07-13 020444" src="https://github.com/user-attachments/assets/b74cf8a7-db2f-4957-932f-5456c04dac5e" />
 <img width="1913" height="880" alt="Screenshot 2026-07-13 020520" src="https://github.com/user-attachments/assets/aa5d7bee-8174-45b1-9c88-4d5cfd1e8daa" />
 <img width="1918" height="873" alt="Screenshot 2026-07-13 020534" src="https://github.com/user-attachments/assets/12041ffb-6e3f-4e8f-ad4d-f1785b5c5f50" />
-<img width="1913" height="848" alt="Screenshot 2026-07-13 020601" src="https://github.com/user-attachments/assets/90bb44bc-6c9f-4fd4-925b-dc2a938fdc87" />
+<img width="1912" height="772" alt="Screenshot 2026-07-13 020547" src="https://github.com/user-attachments/assets/49a56595-88d5-43c7-9366-1329b49f6b46" />
+
 ---
 
 ## 🏆 Core Technologies Used (The IBM Stack)
