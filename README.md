@@ -11,6 +11,11 @@
 https://docs.google.com/videos/d/1r0zR4eqxMDFpNzph_9MeQwZTrGSSQXVg3asL4nH2F_A/play
 ---
 
+## 📸 Project Screenshots
+*(Delete this text and drag-and-drop your screenshots here!)*
+
+---
+
 ## 🏆 Core Technologies Used (The IBM Stack)
 This project is proudly built as part of the **IBM BOB** (Build-O-Bot / Best of the Best) programme, fully utilizing the IBM Cloud ecosystem:
 * **IBM watsonx.ai**: The core generative AI engine powering the entire intelligence layer.
