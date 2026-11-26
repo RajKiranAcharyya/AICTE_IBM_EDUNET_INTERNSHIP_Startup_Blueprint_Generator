@@ -5,11 +5,14 @@ import com.raj.blueprint.service.BlueprintParserService.SectionDef;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class GroqService {
@@ -100,6 +103,8 @@ public class GroqService {
         return new Blueprint(raw1 + "\n\n" + raw2, merged, metadata);
     }
 
+    private static final Pattern RETRY_IN_PATTERN = Pattern.compile("try again in ([0-9]+(?:\\.[0-9]+)?)s", Pattern.CASE_INSENSITIVE);
+
     @SuppressWarnings("unchecked")
     private String callGroq(String prompt) {
         if (apiKey == null || apiKey.isBlank()) {
@@ -113,32 +118,70 @@ public class GroqService {
                 Map.of("role", "user", "content", prompt)
             ),
             "temperature", 0.7,
-            "max_tokens", 8000,
+            "max_tokens", 3600,
             "top_p", 0.95
         );
 
-        try {
-            Map<String, Object> response = restClient.post()
-                .uri(apiUrl)
-                .header("Authorization", "Bearer " + apiKey)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body)
-                .retrieve()
-                .body(Map.class);
+        int maxAttempts = 3;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                Map<String, Object> response = restClient.post()
+                    .uri(apiUrl)
+                    .header("Authorization", "Bearer " + apiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .body(Map.class);
 
-            if (response != null && response.containsKey("choices")) {
-                List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
-                if (!choices.isEmpty()) {
-                    Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-                    if (message != null && message.get("content") != null) {
-                        return message.get("content").toString();
+                if (response != null && response.containsKey("choices")) {
+                    List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
+                    if (!choices.isEmpty()) {
+                        Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+                        if (message != null && message.get("content") != null) {
+                            return message.get("content").toString();
+                        }
                     }
                 }
+                throw new RuntimeException("Empty response received from Groq API.");
+            } catch (HttpClientErrorException.TooManyRequests e) {
+                if (attempt == maxAttempts) {
+                    throw new RuntimeException("Groq AI rate limit reached after retries: " + e.getMessage(), e);
+                }
+                long waitMs = parseRetryWaitMs(e);
+                try {
+                    Thread.sleep(waitMs);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrupted while waiting for Groq rate limit reset.", ie);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Groq AI service error: " + e.getMessage(), e);
             }
-            throw new RuntimeException("Empty response received from Groq API.");
-        } catch (Exception e) {
-            throw new RuntimeException("Groq AI service error: " + e.getMessage(), e);
         }
+        throw new RuntimeException("Groq AI service failed after retries.");
+    }
+
+    private long parseRetryWaitMs(HttpClientErrorException.TooManyRequests e) {
+        String retryAfter = e.getResponseHeaders() != null ? e.getResponseHeaders().getFirst("Retry-After") : null;
+        if (retryAfter != null && !retryAfter.isBlank()) {
+            try {
+                double sec = Double.parseDouble(retryAfter.trim());
+                return Math.min(65_000L, Math.max(2_000L, (long) ((sec + 1.5) * 1000)));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        String msg = e.getResponseBodyAsString();
+        if (msg != null) {
+            Matcher m = RETRY_IN_PATTERN.matcher(msg);
+            if (m.find()) {
+                try {
+                    double sec = Double.parseDouble(m.group(1));
+                    return Math.min(65_000L, Math.max(2_000L, (long) ((sec + 1.5) * 1000)));
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return 22_000L;
     }
 
     private String buildPrompt(Map<String, String> formData, List<SectionDef> subset) {
