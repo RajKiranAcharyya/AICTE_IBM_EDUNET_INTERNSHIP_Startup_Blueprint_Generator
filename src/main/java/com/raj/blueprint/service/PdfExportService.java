@@ -43,7 +43,7 @@ public class PdfExportService {
                     cb.fill();
 
                     Phrase footer = new Phrase(
-                        "StartupBlueprint.AI  |  Powered by Groq AI & Java Spring Boot  |  Page " + writer.getPageNumber(),
+                        "StartupBlueprint.AI  |  Powered by AI API Intelligence & Java Spring Boot  |  Page " + writer.getPageNumber(),
                         FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 8, TEXT_MUTED)
                     );
                     ColumnText.showTextAligned(cb, Element.ALIGN_CENTER, footer,
