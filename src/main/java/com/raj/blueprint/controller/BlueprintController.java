@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Controller
 public class BlueprintController {
@@ -31,6 +32,9 @@ public class BlueprintController {
         .maximumSize(200)
         .build();
 
+    // In-memory visitor counter seeded at 34 (resets on container restart/sleep)
+    private final AtomicLong visitorCount = new AtomicLong(34);
+
     public BlueprintController(GroqService groqService,
                                BlueprintParserService parserService,
                                PdfExportService pdfExportService) {
@@ -40,7 +44,8 @@ public class BlueprintController {
     }
 
     @GetMapping("/")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("visitorCount", visitorCount.incrementAndGet());
         return "index";
     }
 
@@ -99,6 +104,7 @@ public class BlueprintController {
         String bid = (String) session.getAttribute("last_bid");
         Blueprint blueprint = bid != null ? blueprintStore.getIfPresent(bid) : null;
         if (blueprint == null) {
+            model.addAttribute("visitorCount", visitorCount.get());
             model.addAttribute("error", "No blueprint found or it has expired (auto-deleted after 20 hours). Please generate a new one.");
             return "index";
         }
@@ -110,6 +116,7 @@ public class BlueprintController {
     public String reportById(@PathVariable String bid, Model model) {
         Blueprint blueprint = blueprintStore.getIfPresent(bid);
         if (blueprint == null) {
+            model.addAttribute("visitorCount", visitorCount.get());
             model.addAttribute("error", "Blueprint not found or expired (auto-deleted after 20 hours). Please generate a new one.");
             return "index";
         }

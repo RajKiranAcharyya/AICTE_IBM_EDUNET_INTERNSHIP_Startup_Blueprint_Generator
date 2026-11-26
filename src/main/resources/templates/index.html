@@ -46,7 +46,7 @@
         <p class="hero-subtitle">
           Powered by Groq's ultra-fast inference platform — delivering lightning-fast AI responses and real-time startup planning powered by leading large language models.
         </p>
-        <div class="hero-stats d-flex gap-4 mt-4">
+        <div class="hero-stats d-flex gap-4 mt-4 flex-wrap">
           <div class="stat-item">
             <span class="stat-num">19</span>
             <span class="stat-label">Sections</span>
@@ -58,6 +58,10 @@
           <div class="stat-item">
             <span class="stat-num">PDF</span>
             <span class="stat-label">Export</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" th:text="${visitorCount ?: 34}">34</span>
+            <span class="stat-label">Visitors</span>
           </div>
         </div>
         <div class="hero-actions d-flex align-items-center gap-3 mt-4 flex-wrap">
