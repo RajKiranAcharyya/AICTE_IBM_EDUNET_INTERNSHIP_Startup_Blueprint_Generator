@@ -1,7 +1,7 @@
-# 🚀 AI-Powered Startup Blueprint Generator
-### Powered by IBM watsonx.ai & IBM Granite Models
+# 🚀 AI-Powered Startup Blueprint Generator (`StartupBlueprint.AI`)
+### Powered by Java 21, Spring Boot & AI API Intelligence
 
-> Transform any startup idea into a complete, investor-ready business blueprint in seconds using the power of IBM Granite foundation models on IBM watsonx.ai.
+> Transform any startup idea into a complete, investor-ready 19-section business blueprint in seconds — featuring AI-driven market & financial analysis, XSS-safe Markdown rendering, server-side A4 PDF export, 20-hour auto-expiring report links, and a Dockerized Spring Boot architecture.
 
 **🔴 Live Demo:** [https://startupplan-generator-edunet-foundation.onrender.com](https://startupplan-generator-edunet-foundation.onrender.com)
 
@@ -9,6 +9,7 @@
 
 ## 🎥 Video Demonstration
 https://docs.google.com/videos/d/1r0zR4eqxMDFpNzph_9MeQwZTrGSSQXVg3asL4nH2F_A/play
+
 ---
 
 ## 📸 Project Screenshots
@@ -20,204 +21,119 @@ https://docs.google.com/videos/d/1r0zR4eqxMDFpNzph_9MeQwZTrGSSQXVg3asL4nH2F_A/pl
 
 ---
 
-## 🏆 Core Technologies Used (The IBM Stack)
-This project is proudly built as part of the **IBM BOB** (Build-O-Bot / Best of the Best) programme, fully utilizing the IBM Cloud ecosystem:
-* **IBM watsonx.ai**: The core generative AI engine powering the entire intelligence layer.
-* **IBM Granite Models** (`ibm/granite-3-8b-instruct`): High-performance enterprise-grade LLMs used for strategic business generation.
-* **IBM Cloud Tools**: Used for secure, scalable enterprise deployment architecture.
-* **IBM Cloud Storage**: Integrated for secure, persistent storage of startup blueprint documents and AI assets.
-* **IBM AICTE EduNet Foundation**: Program framework and cloud provisioning.
-
----
-
-## ✨ Features
+## ✨ Key Features
 
 | Feature | Details |
 |---|---|
-| **19-Section Blueprint** | Executive Summary, SWOT, BMC, Market Research, Competitor Analysis, Legal Checklist, Investor Pitch, 30-60-90 Day Plan & more |
-| **IBM Granite AI** | Powered by `ibm/granite-3-8b-instruct` on IBM watsonx.ai |
-| **Country-Specific** | Government schemes, legal requirements, and market data tailored to your country |
-| **Dark Mode** | Full dark/light mode toggle with local storage persistence |
-| **PDF Export** | Client-side PDF generation via html2pdf.js |
-| **Copy Report** | One-click full report copy to clipboard |
-| **Mobile-Friendly** | Fully responsive Bootstrap 5 UI |
-| **Animated UI** | Floating cards, orbit loading animation, staggered card reveals |
+| **19-Section Blueprint** | Executive Summary, Business Model Canvas, Market Research, Competitor Analysis, SWOT, Target Customers, Value Proposition, Budget, Revenue Model, Pricing, Marketing, GTM, Funding, Government Schemes, Legal Checklist, Risk Analysis, Growth Roadmap, Investor Pitch, and 30-60-90 Day Plan |
+| **3-Batch AI Generation** | Splits generation across balanced batches (`1–7`, `8–13`, `14–19`) with automatic rate-limit (`HTTP 429`) retry handling so complex prompts complete without truncation |
+| **Server-Side PDF Export** | Clean, multi-page styled A4 PDF downloads generated via **OpenPDF 2.0.3** (`/report/{bid}/pdf`) |
+| **20-Hour Auto-Deletion (TTL)** | Bounded **Caffeine** cache (`expireAfterWrite(20, HOURS)`, max `200` blueprints) protects server memory and automatically expires temporary report links |
+| **XSS-Safe Rendering** | Parses Markdown & GFM tables using **CommonMark** and sanitizes output via **OWASP Java HTML Sanitizer** |
+| **IST Timestamping** | Generates accurate `Asia/Kolkata` (`IST`) timestamps even inside UTC Docker containers |
+| **Country-Specific Insights** | Tailors government startup schemes, regulatory checklists, and market context to the selected country |
+| **Live Visitor Counter & UI Polish** | In-memory visitor counter on the landing page, Dark/Light mode toggle, animated loading overlay, one-click clipboard copy, and "Connect with Raj" modal |
 
 ---
 
 ## 🗂️ Project Structure
 
 ```
-startup-blueprint-ai/
+AICTE_IBM_EDUNET_INTERNSHIP_Startup_Blueprint_Generator/
 │
-├── app.py                  # Flask app + watsonx.ai integration + AGENT_INSTRUCTIONS
-├── requirements.txt        # Python dependencies
-├── .env.example            # Environment variable template
-├── .env                    # Your secrets (never commit this!)
+├── Dockerfile                                  # Multi-stage Maven + Eclipse Temurin JDK/JRE 21 Alpine build
+├── .dockerignore                               # Excludes target/, .git/, docs/decks from Docker context
+├── pom.xml                                     # Spring Boot 3.4.3, Java 21, Caffeine, CommonMark, OWASP, OpenPDF
 │
-├── templates/
-│   ├── index.html          # Main landing + form page
-│   └── report.html         # Full business report page
+├── src/main/java/com/raj/blueprint/
+│   ├── BlueprintApplication.java               # Spring Boot entry point
+│   ├── controller/
+│   │   └── BlueprintController.java            # Routes: /, /generate, /report, /report/{bid}, /report/{bid}/pdf, /health
+│   ├── model/
+│   │   └── Blueprint.java                      # Blueprint DTO (raw text, parsed sections, metadata)
+│   └── service/
+│       ├── GroqService.java                    # AI API client (3-batch orchestration, 429 retry, IST formatting)
+│       ├── BlueprintParserService.java         # 3-tier heading matcher, CommonMark + OWASP HTML sanitizer
+│       └── PdfExportService.java               # Server-side A4 PDF document builder (OpenPDF)
 │
-├── static/
-│   ├── css/
-│   │   └── style.css       # Custom styles (dark mode, animations, cards)
-│   └── js/
-│       └── main.js         # Frontend logic (form, loading, PDF, copy)
+├── src/main/resources/
+│   ├── application.properties                  # Server port (${PORT:8080}) & API configuration
+│   ├── templates/
+│   │   ├── index.html                          # Landing + startup brief input form (Thymeleaf + Bootstrap 5)
+│   │   └── report.html                         # Interactive 19-section report viewer with 20h TTL notice
+│   └── static/
+│       ├── css/style.css                       # Light/dark themes, animations, cards, responsive styles
+│       ├── js/main.js                          # Async form submission, loading steps, copy & theme toggle
+│       └── images/raj_profile.jpg              # Profile image for Connect modal
 │
 └── README.md
 ```
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Quick Start (Local Development)
+
+### Prerequisites
+- **Java 21 (JDK 21)**
+- **Apache Maven 3.9+**
+- **Groq API Key** (free tier available at [console.groq.com](https://console.groq.com))
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/startup-blueprint-ai.git
-cd startup-blueprint-ai
+git clone https://github.com/RajKiranAcharyya/AICTE_IBM_EDUNET_INTERNSHIP_Startup_Blueprint_Generator.git
+cd AICTE_IBM_EDUNET_INTERNSHIP_Startup_Blueprint_Generator
 ```
 
-### 2. Create a Virtual Environment
+### 2. Set Environment Variables
+
+**Windows Command Prompt (`cmd`):**
+```cmd
+set GROQ_API_KEY=your_groq_api_key_here
+set GROQ_MODEL=openai/gpt-oss-120b
+```
+
+**Windows PowerShell:**
+```powershell
+$env:GROQ_API_KEY="your_groq_api_key_here"
+$env:GROQ_MODEL="openai/gpt-oss-120b"
+```
+
+**macOS / Linux:**
+```bash
+export GROQ_API_KEY="your_groq_api_key_here"
+export GROQ_MODEL="openai/gpt-oss-120b"
+```
+
+### 3. Build & Run
 
 ```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# macOS / Linux
-python3 -m venv venv
-source venv/bin/activate
+mvn spring-boot:run
 ```
 
-### 3. Install Dependencies
-
+Or build an executable JAR and run it:
 ```bash
-pip install -r requirements.txt
+mvn clean package -DskipTests
+java -jar target/startup-blueprint-generator-1.0.0.jar
 ```
 
-### 4. Configure Environment Variables
-
-```bash
-# Copy the example file
-cp .env.example .env
-```
-
-Open `.env` and fill in your credentials:
-
-```env
-IBM_API_KEY=your_ibm_api_key_here
-IBM_PROJECT_ID=your_project_id_here
-IBM_REGION_URL=https://us-south.ml.cloud.ibm.com
-IBM_MODEL_ID=ibm/granite-3-8b-instruct
-FLASK_SECRET_KEY=your_random_secret_key
-```
-
-### 5. Run the App
-
-```bash
-python app.py
-```
-
-Open your browser at **http://localhost:5000**
+Open your browser at **[http://localhost:8080](http://localhost:8080)**
 
 ---
 
-## 🔑 Getting IBM watsonx.ai Credentials
+## 🚀 Deployment (Docker on Render)
 
-### IBM API Key
-1. Go to [IBM Cloud Console](https://cloud.ibm.com)
-2. Navigate to **Manage → Access (IAM) → API Keys**
-3. Click **Create an IBM Cloud API key**
-4. Copy the key to your `.env` file
+The repository includes a multi-stage **`Dockerfile`** tuned for Render's 512 MB Free Tier (`-XX:MaxRAMPercentage=75.0` and dynamic `${PORT:-8080}`).
 
-### Project ID
-1. Go to [IBM watsonx.ai](https://dataplatform.cloud.ibm.com)
-2. Open or create a **Project**
-3. Go to **Manage → General**
-4. Copy the **Project ID** to your `.env` file
-
-### Region URL
-Choose the region closest to you:
-
-| Region    | URL |
-|-----------|-----|
-| Dallas    | `https://us-south.ml.cloud.ibm.com` |
-| London    | `https://eu-gb.ml.cloud.ibm.com` |
-| Frankfurt | `https://eu-de.ml.cloud.ibm.com` |
-| Tokyo     | `https://jp-tok.ml.cloud.ibm.com` |
-| Sydney    | `https://au-syd.ml.cloud.ibm.com` |
-
-### Model ID
-Recommended models:
-- `ibm/granite-3-8b-instruct` ← Default, best performance
-- `ibm/granite-13b-instruct-v2`
-- `ibm/granite-3-2b-instruct` (faster, lower cost)
-
----
-
-## 🤖 Customising the AI Agent
-
-Open [`app.py`](app.py) and edit the `AGENT_INSTRUCTIONS` block at the top:
-
-```python
-AGENT_INSTRUCTIONS = """
-You are StartupMentor AI...
-# Change persona, tone, expertise, country-specific schemes here
-"""
-```
-
-You can customise:
-- **AI Personal** — name, role, experience level
-- **Mentoring Style** — formal, casual, aggressive growth hacker, etc.
-- **Country Focus** — add more country-specific government schemes
-- **Response Tone** — inspiring, realistic, conservative, etc.
-- **Section Depth** — add instructions for specific sections
-
----
-
-## 🚀 Deployment
-
-### Deploy to Render (Recommended — Free Tier)
-
-1. **Push to GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit: Startup Blueprint Generator"
-   git remote add origin https://github.com/YOUR_USERNAME/startup-blueprint-ai.git
-   git push -u origin main
-   ```
-
-2. **Create Render Web Service**
-   - Go to [render.com](https://render.com) → **New → Web Service**
-   - Connect your GitHub repository
-   - Set the following:
-     | Field | Value |
-     |---|---|
-     | **Runtime** | Python 3 |
-     | **Build Command** | `pip install -r requirements.txt` |
-     | **Start Command** | `gunicorn app:app --bind 0.0.0.0:$PORT` |
-
-3. **Add Environment Variables in Render Dashboard**
-   - `IBM_API_KEY`
-   - `IBM_PROJECT_ID`
-   - `IBM_REGION_URL`
-   - `IBM_MODEL_ID`
-   - `FLASK_SECRET_KEY`
-
-4. Click **Deploy** — your app will be live at `https://your-app.onrender.com`
-
----
-
-## 🛡️ Security Notes
-
-- **Never commit your `.env` file** — it's in `.gitignore` by default
-- Rotate your IBM API key regularly
-- Use a strong random value for `FLASK_SECRET_KEY`
-- In production, enable HTTPS (Render provides this automatically)
-- The app uses Flask sessions for blueprint storage — configure a persistent session backend for multi-instance deployments
+1. Push the repository to GitHub.
+2. On [render.com](https://render.com), create or configure a **Web Service**:
+   - **Language / Runtime:** `Docker`
+   - **Dockerfile Path:** `./Dockerfile`
+   - **Health Check Path (optional):** `/health`
+3. Add **Environment Variables** in Render Dashboard:
+   - `GROQ_API_KEY` = `your_groq_api_key`
+   - `GROQ_MODEL` = `openai/gpt-oss-120b`
+4. Deploy — your Spring Boot app binds automatically to `$PORT`.
 
 ---
 
@@ -225,25 +141,25 @@ You can customise:
 
 | # | Section | Description |
 |---|---------|-------------|
-| 1 | Executive Summary | High-level overview of the business |
-| 2 | Business Model Canvas | 9-block BMC with all components |
-| 3 | Market Research | TAM/SAM/SOM, trends, opportunities |
-| 4 | Competitor Analysis | Key players, gaps, differentiation |
+| 1 | Executive Summary | High-level venture overview & strategy |
+| 2 | Business Model Canvas | Structured 9-block business canvas |
+| 3 | Market Research | TAM/SAM/SOM, industry trends, growth drivers |
+| 4 | Competitor Analysis | Key players, market gaps, differentiation |
 | 5 | SWOT Analysis | Strengths, Weaknesses, Opportunities, Threats |
-| 6 | Target Customers | Personas, demographics, psychographics |
-| 7 | Value Proposition | Unique value, problem/solution fit |
-| 8 | Estimated Budget | Startup costs, burn rate, breakeven |
-| 9 | Revenue Model | Revenue streams and projections |
-| 10 | Pricing Strategy | Pricing model, tiers, benchmarks |
-| 11 | Marketing Strategy | Channels, content, SEO, social |
-| 12 | Go-To-Market Strategy | Launch plan, partnerships, channels |
-| 13 | Funding Opportunities | VC, angels, crowdfunding, grants |
-| 14 | Government Schemes | Country-specific programs and incentives |
-| 15 | Legal Checklist | Registration, IP, compliance, contracts |
-| 16 | Risk Analysis | Key risks and mitigation strategies |
-| 17 | Growth Roadmap | 1-3 year milestones and KPIs |
-| 18 | Investor Pitch | One-paragraph pitch deck narrative |
-| 19 | 30-60-90 Day Plan | Hyper-specific daily action items |
+| 6 | Target Customers | Customer personas, segments, demographics |
+| 7 | Value Proposition | Core problem/solution fit & competitive edge |
+| 8 | Estimated Budget | Startup cost breakdown, burn & runway |
+| 9 | Revenue Model | Monetization channels & financial projections |
+| 10 | Pricing Strategy | Pricing tiers, unit economics & benchmarks |
+| 11 | Marketing Strategy | Channels, positioning, growth tactics |
+| 12 | Go-To-Market Strategy | Phased launch & acquisition roadmap |
+| 13 | Funding Opportunities | Grants, angels, accelerators, VC targets |
+| 14 | Government Startup Schemes | Country-specific incentives & public programmes |
+| 15 | Legal Checklist | Incorporation, IP, licensing & compliance |
+| 16 | Risk Analysis | Technical, regulatory, financial & market risks |
+| 17 | Growth Roadmap | 1–5 year expansion milestones & KPIs |
+| 18 | Investor Pitch | Concise investor-ready pitch summary |
+| 19 | 30-60-90 Day Action Plan | Concrete first-quarter execution deliverables |
 
 ---
 
@@ -251,14 +167,21 @@ You can customise:
 
 | Layer | Technology |
 |---|---|
-| **AI Backend** | IBM watsonx.ai + IBM Granite Models |
-| **Cloud Infrastructure**| IBM Cloud Tools & IBM Cloud Storage |
-| **Program Framework** | IBM BOB (IBM AICTE EduNet) |
-| **Web Framework** | Python Flask 3.0 |
-| **Frontend** | Bootstrap 5.3, Bootstrap Icons, Inter Font |
-| **PDF Export** | html2pdf.js (client-side) |
-| **Environment** | python-dotenv |
-| **Production Server** | Gunicorn |
+| **Backend Framework** | Java 21, Spring Boot 3.4.3 (Web, Thymeleaf, RestClient) |
+| **AI Inference Engine** | AI API Intelligence (`openai/gpt-oss-120b` via Groq API) |
+| **Caching & TTL** | Caffeine Cache (20-hour auto-expiration, bounded to 200 reports) |
+| **Markdown & Security** | CommonMark 0.24.0 (+ GFM tables) & OWASP Java HTML Sanitizer |
+| **PDF Export** | OpenPDF 2.0.3 (server-side A4 PDF generation) |
+| **Frontend** | Thymeleaf, Bootstrap 5.3, Bootstrap Icons, Inter Font, Vanilla JS |
+| **Containerization & Hosting** | Multi-stage Docker (`eclipse-temurin:21-jre-alpine`) on Render |
+
+---
+
+## 🛡️ Security & Privacy Notes
+
+- **No hardcoded secrets:** API keys are injected via environment variables (`GROQ_API_KEY`).
+- **Temporary Storage:** Generated blueprints live strictly in bounded server memory for **20 hours** and are automatically purged afterwards.
+- **Sanitized Output:** Rendered Markdown passes through OWASP HTML Sanitizer before display.
 
 ---
 
@@ -270,8 +193,6 @@ MIT License — free to use, modify, and distribute.
 
 ## 🙏 Acknowledgements
 
-Built as part of the **IBM SKILLSBUILD AICTE INTERNSHIP COLLABORATED WITH EduNet Foundation** using IBM watsonx.ai and IBM Granite foundation models.
+Originally initiated during the **AICTE – IBM SkillsBuild – EduNet Foundation Internship**, and upgraded into a production-ready **Java 21 Spring Boot & Docker** web platform.
 
----
-
-*Made with ❤️ using IBM watsonx.ai*
+**Built by [Raj Kiran Acharyya](https://github.com/RajKiranAcharyya)**
