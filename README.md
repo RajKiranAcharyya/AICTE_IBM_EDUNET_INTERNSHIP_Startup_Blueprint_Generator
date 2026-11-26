@@ -3,7 +3,7 @@
 
 > Transform any startup idea into a complete, investor-ready 19-section business blueprint in seconds — featuring AI-driven market & financial analysis, XSS-safe Markdown rendering, server-side A4 PDF export, 20-hour auto-expiring report links, and a Dockerized Spring Boot architecture.
 
-**🔴 Live Demo:** [https://startupplan-generator-edunet-foundation.onrender.com](https://startupplan-generator-edunet-foundation.onrender.com)
+**🔴 Live Website:** [https://startupplan-generator-edunet-foundation.onrender.com](https://startupplan-generator-edunet-foundation.onrender.com)
 
 ---
 
