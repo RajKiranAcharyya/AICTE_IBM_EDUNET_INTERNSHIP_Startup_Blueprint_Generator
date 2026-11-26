@@ -25,3 +25,6 @@ flask_session/
 
 # Logs
 *.log
+
+target/
+*.class

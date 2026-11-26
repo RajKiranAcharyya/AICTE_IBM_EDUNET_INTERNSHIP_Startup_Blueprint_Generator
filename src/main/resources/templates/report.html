@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:text="'Startup Blueprint Report — ' + ${#strings.abbreviate(blueprint.metadata.idea, 50)}">Startup Blueprint Report</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="/css/style.css" rel="stylesheet" />
+</head>
+<body class="report-page">
+
+<!-- ░░ REPORT NAVBAR ░░ -->
+<nav class="navbar navbar-expand-lg sticky-top report-navbar" id="mainNavbar">
+  <div class="container-xl">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span class="brand-icon"><i class="bi bi-rocket-takeoff-fill"></i></span>
+      <span class="brand-text">StartupBlueprint<span class="text-accent">.AI</span></span>
+    </a>
+    <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+      <a th:href="@{/report/{bid}/pdf(bid=${bid})}" class="btn btn-sm btn-success-custom rounded-pill px-3" id="downloadPdfBtn">
+        <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+      </a>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="copyFullReport">
+        <i class="bi bi-clipboard me-1"></i>Copy
+      </button>
+      <a href="/" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+        <i class="bi bi-plus-lg me-1"></i>New Blueprint
+      </a>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill" id="themeToggle" title="Toggle dark mode">
+        <i class="bi bi-moon-fill" id="themeIcon"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ░░ REPORT HEADER ░░ -->
+<div class="report-hero" id="reportTop">
+  <div class="container-xl">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <div class="report-badge mb-3">
+          <i class="bi bi-file-earmark-richtext me-2"></i>Startup Business Blueprint
+        </div>
+        <h1 class="report-title" th:text="${#strings.abbreviate(blueprint.metadata.idea, 80)}">Startup Idea</h1>
+        <div class="report-meta-row mt-4 d-flex flex-wrap gap-3">
+          <span class="meta-pill"><i class="bi bi-building me-1"></i><span th:text="${blueprint.metadata.industry}">Industry</span></span>
+          <span class="meta-pill"><i class="bi bi-globe me-1"></i><span th:text="${blueprint.metadata.country}">Country</span></span>
+          <span class="meta-pill"><i class="bi bi-people me-1"></i><span th:text="${blueprint.metadata.audience}">Audience</span></span>
+          <span class="meta-pill"><i class="bi bi-cash-coin me-1"></i><span th:text="${blueprint.metadata.budget}">Budget</span></span>
+        </div>
+        <p class="report-generated mt-3">
+          <i class="bi bi-clock me-1"></i>Generated on <span th:text="${blueprint.metadata.generated}">Date</span>
+          &nbsp;·&nbsp;
+          <i class="bi bi-cpu me-1"></i>Groq AI &amp; Java Spring Boot
+        </p>
+        <div class="alert alert-warning d-inline-flex align-items-center gap-2 mt-2 mb-0 py-2 px-3 rounded-pill small" role="alert">
+          <i class="bi bi-hourglass-split"></i>
+          <span>This blueprint link is temporary and will be <strong>automatically deleted after 20 hours</strong>. Download the PDF or copy it to save a permanent copy.</span>
+        </div>
+      </div>
+      <div class="col-lg-4 d-none d-lg-flex justify-content-end">
+        <div class="report-stats-grid">
+          <div class="rstat"><span class="rstat-num">19</span><span class="rstat-label">Sections</span></div>
+          <div class="rstat"><span class="rstat-num">AI</span><span class="rstat-label">Groq</span></div>
+          <div class="rstat"><span class="rstat-num">PDF</span><span class="rstat-label">Ready</span></div>
+          <div class="rstat"><span class="rstat-num">20h</span><span class="rstat-label">TTL</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ░░ MAIN REPORT LAYOUT ░░ -->
+<div class="container-xl py-5">
+  <div class="row g-4">
+
+    <!-- Sidebar TOC -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="toc-card sticky-top" style="top: 80px;">
+        <div class="toc-header"><i class="bi bi-list-ul me-2"></i>Contents</div>
+        <nav id="tocNav">
+          <a class="toc-link" th:each="sec, stat : ${sections}" th:href="'#section-' + ${sec.slug}">
+            <span class="toc-num" th:text="${stat.count}">1</span><span th:text="${sec.label}">Section</span>
+          </a>
+        </nav>
+        <div class="toc-footer mt-3">
+          <a th:href="@{/report/{bid}/pdf(bid=${bid})}" class="btn btn-sm w-100 btn-success-custom" id="downloadPdfBtn2">
+            <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Body -->
+    <div class="col-lg-9">
+      <div id="reportBody">
+
+        <div class="report-section-card" th:each="sec, stat : ${sections}" th:id="'section-' + ${sec.slug}">
+          <div class="rsc-header"
+               th:classappend="${stat.index % 10 == 0 ? 'color-blue' : (stat.index % 10 == 1 ? 'color-purple' : (stat.index % 10 == 2 ? 'color-green' : (stat.index % 10 == 3 ? 'color-orange' : (stat.index % 10 == 4 ? 'color-red' : (stat.index % 10 == 5 ? 'color-teal' : (stat.index % 10 == 6 ? 'color-pink' : (stat.index % 10 == 7 ? 'color-indigo' : (stat.index % 10 == 8 ? 'color-yellow' : 'color-cyan'))))))))}">
+            <div class="rsc-icon"><i class="bi bi-briefcase-fill"></i></div>
+            <div>
+              <div class="rsc-number" th:text="'Section ' + ${stat.count}">Section 1</div>
+              <h2 class="rsc-title" th:text="${sec.label}">Section Title</h2>
+            </div>
+          </div>
+          <div class="rsc-body" th:utext="${htmlSections.get(sec.slug)}">
+            Section content...
+          </div>
+        </div>
+
+        <!-- Goal Statement -->
+        <div class="report-section-card goal-card mt-4">
+          <div class="rsc-header color-green">
+            <div class="rsc-icon"><i class="bi bi-trophy-fill"></i></div>
+            <div>
+              <div class="rsc-number">Goal</div>
+              <h2 class="rsc-title">Business Goal</h2>
+            </div>
+          </div>
+          <div class="rsc-body">
+            <p class="goal-text" th:text="${blueprint.metadata.goal}">Goal</p>
+          </div>
+        </div>
+
+        <!-- Report Footer -->
+        <div class="report-footer-card mt-4 text-center">
+          <div class="mb-3">
+            <i class="bi bi-rocket-takeoff-fill report-footer-icon"></i>
+          </div>
+          <h4>Your Blueprint is Ready to Launch</h4>
+          <p class="text-muted">This report was generated by Groq AI on a Java Spring Boot backend.
+            Use this as a living document — revisit and refine it as your startup evolves.</p>
+          <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+            <a th:href="@{/report/{bid}/pdf(bid=${bid})}" class="btn btn-success-custom px-4" id="downloadPdfBtn3">
+              <i class="bi bi-file-earmark-pdf me-2"></i>Download PDF
+            </a>
+            <button class="btn btn-outline-custom px-4" id="copyFullReport2">
+              <i class="bi bi-clipboard me-2"></i>Copy Full Report
+            </button>
+            <a href="/" class="btn btn-outline-custom px-4">
+              <i class="bi bi-plus-lg me-2"></i>Generate New Blueprint
+            </a>
+          </div>
+          <p class="report-disclaimer mt-4">
+            <i class="bi bi-info-circle me-1"></i>
+            This blueprint is AI-generated for planning purposes. Validate market data, legal advice,
+            and financial projections with qualified professionals before execution.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="liveToast" class="toast align-items-center text-bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage">Copied to clipboard!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initReport();
+  });
+</script>
+</body>
+</html>
