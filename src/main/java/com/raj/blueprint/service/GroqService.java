@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -72,22 +73,31 @@ public class GroqService {
     }
 
     public Blueprint generateBlueprint(Map<String, String> formData) {
-        List<SectionDef> part1 = BlueprintParserService.BLUEPRINT_SECTIONS.subList(0, 10);
-        List<SectionDef> part2 = BlueprintParserService.BLUEPRINT_SECTIONS.subList(10, BlueprintParserService.BLUEPRINT_SECTIONS.size());
+        List<SectionDef> all = BlueprintParserService.BLUEPRINT_SECTIONS;
+        List<List<SectionDef>> batches = List.of(
+            all.subList(0, 7),
+            all.subList(7, 13),
+            all.subList(13, all.size())
+        );
 
-        String raw1 = callGroq(buildPrompt(formData, part1));
-        String raw2 = callGroq(buildPrompt(formData, part2));
+        StringBuilder rawAll = new StringBuilder();
+        Map<String, String> merged = new LinkedHashMap<>();
 
-        Map<String, String> sections1 = parserService.parseSections(raw1);
-        Map<String, String> sections2 = parserService.parseSections(raw2);
+        for (List<SectionDef> batch : batches) {
+            String raw = callGroq(buildPrompt(formData, batch));
+            if (!rawAll.isEmpty()) {
+                rawAll.append("\n\n");
+            }
+            rawAll.append(raw);
 
-        Map<String, String> merged = new LinkedHashMap<>(sections1);
-        for (Map.Entry<String, String> entry : sections2.entrySet()) {
-            String slug = entry.getKey();
-            String content = entry.getValue();
-            boolean isPlaceholder = content.startsWith("*") && content.endsWith("*");
-            if (!merged.containsKey(slug) || (!isPlaceholder && merged.get(slug).startsWith("*"))) {
-                merged.put(slug, content);
+            Map<String, String> parsed = parserService.parseSections(raw);
+            for (Map.Entry<String, String> entry : parsed.entrySet()) {
+                String slug = entry.getKey();
+                String content = entry.getValue();
+                boolean isPlaceholder = content.startsWith("*") && content.endsWith("*");
+                if (!merged.containsKey(slug) || (!isPlaceholder && merged.get(slug).startsWith("*"))) {
+                    merged.put(slug, content);
+                }
             }
         }
 
@@ -98,9 +108,10 @@ public class GroqService {
         metadata.put("audience", formData.getOrDefault("audience", ""));
         metadata.put("budget", formData.getOrDefault("budget", ""));
         metadata.put("goal", formData.getOrDefault("goal", ""));
-        metadata.put("generated", LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a")));
+        metadata.put("generated", ZonedDateTime.now(ZoneId.of("Asia/Kolkata"))
+            .format(DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a 'IST'")));
 
-        return new Blueprint(raw1 + "\n\n" + raw2, merged, metadata);
+        return new Blueprint(rawAll.toString(), merged, metadata);
     }
 
     private static final Pattern RETRY_IN_PATTERN = Pattern.compile("try again in ([0-9]+(?:\\.[0-9]+)?)s", Pattern.CASE_INSENSITIVE);
@@ -118,7 +129,7 @@ public class GroqService {
                 Map.of("role", "user", "content", prompt)
             ),
             "temperature", 0.7,
-            "max_tokens", 3600,
+            "max_tokens", 3800,
             "top_p", 0.95
         );
 
@@ -204,7 +215,7 @@ public class GroqService {
             ===================================================
 
             Generate a DETAILED Startup Business Blueprint for the %d sections listed
-            below. Write at minimum 200 words per section. Be highly specific to the
+            below. Write 150-220 words per section. Be highly specific to the
             country, industry, and business idea provided. Do NOT stop early — every
             single section listed must be completed in full.
 
